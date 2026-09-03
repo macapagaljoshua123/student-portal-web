@@ -34,9 +34,40 @@ export function AuthProvider({ children }) {
     [persistSession]
   );
 
+  // Prompt#1 section 2.1: Google sign-up requires choosing Free or Pro tier.
+  // Free tier completes sign-up immediately; Pro tier is a request that
+  // Super Admin must manually approve, so no session is created for it.
+  const signupWithGoogle = useCallback(
+    async (idToken, tier) => {
+      if (tier === "pro") {
+        const { data } = await apiClient.post("/auth/google/pro-request", {
+          id_token: idToken,
+        });
+        return { pending: true, ...data };
+      }
+      const { data } = await apiClient.post("/auth/google", {
+        id_token: idToken,
+        tier: "free",
+      });
+      return persistSession(data);
+    },
+    [persistSession]
+  );
+
   const completePasswordReset = useCallback(() => {
     setUser((prev) => {
       const next = { ...prev, must_reset_password: false };
+      localStorage.setItem("sgp_user", JSON.stringify(next));
+      return next;
+    });
+  }, []);
+
+  // Merge a partial update (e.g. a new full_name) into the cached user
+  // object after a successful Settings save, without a full re-login.
+  const refreshUser = useCallback((partial) => {
+    setUser((prev) => {
+      if (!prev) return prev;
+      const next = { ...prev, ...partial };
       localStorage.setItem("sgp_user", JSON.stringify(next));
       return next;
     });
@@ -54,7 +85,16 @@ export function AuthProvider({ children }) {
 
   return (
     <AuthContext.Provider
-      value={{ user, loading, login, loginWithGoogle, logout, completePasswordReset }}
+      value={{
+        user,
+        loading,
+        login,
+        loginWithGoogle,
+        signupWithGoogle,
+        logout,
+        completePasswordReset,
+        refreshUser,
+      }}
     >
       {children}
     </AuthContext.Provider>

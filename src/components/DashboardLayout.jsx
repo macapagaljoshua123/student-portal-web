@@ -11,17 +11,23 @@ import {
   Menu,
   X,
   UserCircle2,
+  ShieldCheck,
+  Activity,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
+import { usePresenceHeartbeat } from "../hooks/usePresence";
 
 const NAV_ITEMS = {
   super_admin: [
     { to: "/dashboard/analytics", label: "Analytics", icon: BarChart3 },
     { to: "/dashboard/organizations", label: "Organization", icon: Building2 },
     { to: "/dashboard/organizations", label: "List of Organizations", icon: ListTree, exact: true },
+    { to: "/dashboard/admins", label: "Admins", icon: ShieldCheck },
     { to: "/dashboard/settings", label: "Settings", icon: Settings },
   ],
+  // Free/Pro tier sidebar per Prompt#1 2.1 (Analytics, Organization, Settings, Logout)
   admin: [
+    { to: "/dashboard/activity", label: "Analytics", icon: Activity },
     { to: "/dashboard/organizations", label: "Organization", icon: Building2 },
     { to: "/dashboard/settings", label: "Settings", icon: Settings },
   ],
@@ -32,6 +38,8 @@ export default function DashboardLayout({ children }) {
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  usePresenceHeartbeat(Boolean(user));
 
   const items = NAV_ITEMS[user?.account_type] || [];
 

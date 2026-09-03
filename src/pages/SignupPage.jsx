@@ -1,10 +1,56 @@
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Mail, ShieldCheck, Users2 } from "lucide-react";
 import PublicNavbar from "../components/PublicNavbar";
 import PublicFooter from "../components/PublicFooter";
+import GoogleSignInButton from "../components/GoogleSignInButton";
+import TierSelectionModal from "../components/TierSelectionModal";
+import { useAuth } from "../context/AuthContext";
+import { useToast } from "../context/ToastContext";
+import { DASHBOARD_ROUTES } from "../App";
 
 export default function SignupPage() {
+  const { signupWithGoogle } = useAuth();
+  const { notify } = useToast();
+  const navigate = useNavigate();
+  const [showTierModal, setShowTierModal] = useState(false);
+  const [pendingCredential, setPendingCredential] = useState(null);
+  const [error, setError] = useState("");
+
+  // Step 1: capture the Google credential, then ask which tier to join.
+  function handleGoogleCredential(idToken) {
+    setError("");
+    setPendingCredential(idToken);
+    setShowTierModal(true);
+  }
+
+  // Step 2a: Free tier completes sign-up right away.
+  async function handleSelectFree() {
+    try {
+      const userData = await signupWithGoogle(pendingCredential, "free");
+      setShowTierModal(false);
+      navigate(DASHBOARD_ROUTES[userData.account_type] || "/dashboard/profile");
+    } catch (err) {
+      setError(err.response?.data?.detail || "Could not sign up with Google.");
+      setShowTierModal(false);
+    }
+  }
+
+  // Step 2b: Pro tier is a request for the Super Admin, not an instant account.
+  async function handleSelectPro() {
+    try {
+      await signupWithGoogle(pendingCredential, "pro");
+      notify("Contact Super Admin for approval. We've flagged your request.", {
+        icon: "mail",
+      });
+    } catch (err) {
+      setError(err.response?.data?.detail || "Could not submit Pro tier request.");
+    } finally {
+      setShowTierModal(false);
+    }
+  }
+
   return (
     <div className="min-h-screen bg-white">
       <PublicNavbar />
@@ -20,15 +66,30 @@ export default function SignupPage() {
             Getting started
           </span>
           <h1 className="mt-5 text-3xl font-semibold text-navy-950 sm:text-4xl">
-            Accounts are set up by your Admin
+            Sign up with Google, or get added by your Admin
           </h1>
           <p className="mt-4 text-navy-900/60">
-            To keep every organization&apos;s roster accurate, individual
-            members don&apos;t self-register. Instead, your Dean & Coordinator
-            (Admin) creates your organization and adds each officer directly.
-            Here&apos;s how it works from there.
+            Signing in with Google lets you choose a Free or Pro tier on the
+            spot. Prefer not to use Google? Your Dean & Coordinator (Admin)
+            can also create your organization and add each officer directly.
           </p>
         </motion.div>
+
+        <div className="mx-auto mt-10 max-w-sm">
+          <div className="card flex flex-col items-center gap-3 text-center">
+            <p className="text-sm font-medium text-navy-900">Continue with Google</p>
+            <GoogleSignInButton onCredential={handleGoogleCredential} text="signup_with" />
+            {error && <p className="text-sm text-red-600">{error}</p>}
+          </div>
+        </div>
+
+        {showTierModal && (
+          <TierSelectionModal
+            onClose={() => setShowTierModal(false)}
+            onSelectFree={handleSelectFree}
+            onSelectPro={handleSelectPro}
+          />
+        )}
 
         <div className="mx-auto mt-14 grid max-w-4xl gap-6 sm:grid-cols-3">
           {[

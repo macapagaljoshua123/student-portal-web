@@ -39,7 +39,11 @@ export default function PublicNavbar() {
         </ul>
 
         <div className="hidden items-center gap-3 lg:flex">
-          <Link to="/login" className="btn-outline border-white/25 text-white hover:border-gold-400">
+          {/* FIX: text-white -> !text-white so it wins over .btn-outline's default navy text */}
+          <Link
+            to="/login"
+            className="btn-outline border-white/25 !text-white hover:border-gold-400"
+          >
             Log In
           </Link>
           <Link to="/signup" className="btn-gold">
@@ -73,7 +77,8 @@ export default function PublicNavbar() {
             ))}
           </ul>
           <div className="mt-6 flex gap-3">
-            <Link to="/login" className="btn-outline flex-1 border-white/25 text-white">
+            {/* FIX: text-white -> !text-white */}
+            <Link to="/login" className="btn-outline flex-1 border-white/25 !text-white">
               Log In
             </Link>
             <Link to="/signup" className="btn-gold flex-1">

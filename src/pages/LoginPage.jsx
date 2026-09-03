@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { LogIn } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
+import GoogleSignInButton from "../components/GoogleSignInButton";
 
 const DASHBOARD_ROUTES = {
   super_admin: "/dashboard/analytics",
@@ -12,12 +13,13 @@ const DASHBOARD_ROUTES = {
 };
 
 export default function LoginPage() {
-  const { login } = useAuth();
+  const { login, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [googleError, setGoogleError] = useState("");
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -34,6 +36,18 @@ export default function LoginPage() {
       setError(err.response?.data?.detail || "Invalid email or password.");
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function handleGoogleCredential(idToken) {
+    setGoogleError("");
+    try {
+      const userData = await loginWithGoogle(idToken);
+      navigate(DASHBOARD_ROUTES[userData.account_type] || "/dashboard/profile");
+    } catch (err) {
+      setGoogleError(
+        err.response?.data?.detail || "Could not sign in with Google. Try again or sign up."
+      );
     }
   }
 
@@ -131,6 +145,21 @@ export default function LoginPage() {
               {loading ? "Signing in..." : "Log In"}
             </button>
           </form>
+
+          <div className="my-6 flex items-center gap-3 text-xs text-navy-900/40">
+            <span className="h-px flex-1 bg-navy-900/10" />
+            OR
+            <span className="h-px flex-1 bg-navy-900/10" />
+          </div>
+
+          <div className="flex flex-col items-center gap-2">
+            <GoogleSignInButton onCredential={handleGoogleCredential} text="signin_with" />
+            {googleError && (
+              <p role="alert" className="text-center text-sm text-red-600">
+                {googleError}
+              </p>
+            )}
+          </div>
 
           <p className="mt-6 text-center text-sm text-navy-900/50">
             New organization?{" "}

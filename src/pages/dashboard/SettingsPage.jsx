@@ -1,18 +1,47 @@
 import { useState } from "react";
-import { KeyRound } from "lucide-react";
+import { KeyRound, Pencil } from "lucide-react";
 import apiClient from "../../api/client";
 import DashboardLayout from "../../components/DashboardLayout";
 import { useAuth } from "../../context/AuthContext";
+import { useToast } from "../../context/ToastContext";
 
 export default function SettingsPage() {
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
+  const { notify } = useToast();
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
+  const [editingName, setEditingName] = useState(false);
+  const [fullName, setFullName] = useState(user?.full_name || "");
+  const [savingName, setSavingName] = useState(false);
+  const [nameError, setNameError] = useState("");
+
   const isSuperAdmin = user?.account_type === "super_admin";
+
+  // Prompt#1 3.1/3.2: "Can edit Full Name — Role and Email are fixed
+  // (non-editable for now)."
+  async function handleSaveName(e) {
+    e.preventDefault();
+    setNameError("");
+    if (!fullName.trim()) {
+      setNameError("Full name can't be empty.");
+      return;
+    }
+    setSavingName(true);
+    try {
+      await apiClient.patch("/auth/me", { full_name: fullName.trim() });
+      refreshUser?.({ full_name: fullName.trim() });
+      setEditingName(false);
+      notify("Full name updated.");
+    } catch (err) {
+      setNameError(err.response?.data?.detail || "Could not update your name.");
+    } finally {
+      setSavingName(false);
+    }
+  }
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -51,10 +80,45 @@ export default function SettingsPage() {
         <div className="card">
           <h2 className="font-display text-lg font-semibold text-navy-950">Profile</h2>
           <dl className="mt-4 space-y-3 text-sm">
-            <div className="flex justify-between border-b border-navy-900/5 pb-3">
-              <dt className="text-navy-900/50">Full Name</dt>
-              <dd className="font-medium text-navy-900">{user?.full_name}</dd>
+            <div className="flex items-center justify-between gap-3 border-b border-navy-900/5 pb-3">
+              <dt className="shrink-0 text-navy-900/50">Full Name</dt>
+              {editingName ? (
+                <form onSubmit={handleSaveName} className="flex flex-1 items-center gap-2">
+                  <input
+                    autoFocus
+                    className="field-input !py-1.5 text-sm"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                  />
+                  <button type="submit" disabled={savingName} className="btn-primary !px-3 !py-1.5 text-xs">
+                    {savingName ? "..." : "Save"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEditingName(false);
+                      setFullName(user?.full_name || "");
+                      setNameError("");
+                    }}
+                    className="text-xs text-navy-900/50 hover:text-navy-900"
+                  >
+                    Cancel
+                  </button>
+                </form>
+              ) : (
+                <dd className="flex items-center gap-2 font-medium text-navy-900">
+                  {user?.full_name}
+                  <button
+                    onClick={() => setEditingName(true)}
+                    aria-label="Edit full name"
+                    className="text-navy-900/40 hover:text-navy-900"
+                  >
+                    <Pencil className="h-3.5 w-3.5" />
+                  </button>
+                </dd>
+              )}
             </div>
+            {nameError && <p className="text-xs text-red-600">{nameError}</p>}
             <div className="flex justify-between border-b border-navy-900/5 pb-3">
               <dt className="text-navy-900/50">Email</dt>
               <dd className="font-medium text-navy-900">{user?.email}</dd>
@@ -66,6 +130,7 @@ export default function SettingsPage() {
               </dd>
             </div>
           </dl>
+          <p className="mt-3 text-xs text-navy-900/40">Role and Email are fixed for now.</p>
         </div>
 
         {!isSuperAdmin && (

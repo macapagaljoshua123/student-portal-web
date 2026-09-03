@@ -10,7 +10,7 @@ export const PSG_ROLES = [
   { value: "Treasurer", accountType: "member" },
   { value: "Auditor", accountType: "member" },
   { value: "BMA Governor", accountType: "member" },
-  { value: "EDUC SOC Governor", accountType: "member" },
+  { value: "EducSoc Governor", accountType: "member" },
 ];
 
 export default function RoleDropdown({ value, onChange, id }) {

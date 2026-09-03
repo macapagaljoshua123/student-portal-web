@@ -9,6 +9,8 @@ import ResetPasswordPage from "./pages/ResetPasswordPage";
 import UnauthorizedPage from "./pages/UnauthorizedPage";
 
 import AnalyticsPage from "./pages/dashboard/AnalyticsPage";
+import AdminAnalyticsPage from "./pages/dashboard/AdminAnalyticsPage";
+import AdminsPage from "./pages/dashboard/AdminsPage";
 import OrganizationsPage from "./pages/dashboard/OrganizationsPage";
 import OrganizationDetailPage from "./pages/dashboard/OrganizationDetailPage";
 import SettingsPage from "./pages/dashboard/SettingsPage";
@@ -22,8 +24,7 @@ const DASHBOARD_ROUTES = {
 };
 
 function RootRedirect() {
-  // Landing page is public; logged-in users visiting "/" still see it,
-  // matching the spec's public Landing Page route.
+  
   return <LandingPage />;
 }
 
@@ -56,6 +57,22 @@ export default function App() {
             element={
               <ProtectedRoute allowedRoles={["super_admin"]}>
                 <AnalyticsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard/admins"
+            element={
+              <ProtectedRoute allowedRoles={["super_admin"]}>
+                <AdminsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard/activity"
+            element={
+              <ProtectedRoute allowedRoles={["admin"]}>
+                <AdminAnalyticsPage />
               </ProtectedRoute>
             }
           />

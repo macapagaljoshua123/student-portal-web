@@ -1,5 +1,6 @@
 import { UserCircle2, Sparkles } from "lucide-react";
 import DashboardLayout from "../../components/DashboardLayout";
+import StatusBadge from "../../components/StatusBadge";
 import { useAuth } from "../../context/AuthContext";
 
 const ROLE_LABELS = {
@@ -21,6 +22,10 @@ export default function ProfileViewPage() {
           {ROLE_LABELS[user?.account_type] || "Member"}
           {user?.org_role ? ` · ${user.org_role}` : ""}
         </p>
+        <div className="mt-2 flex justify-center">
+          {/* You're viewing this page, so you're online by definition. */}
+          <StatusBadge online />
+        </div>
 
         <div className="card mt-8 text-left">
           <dl className="space-y-3 text-sm">

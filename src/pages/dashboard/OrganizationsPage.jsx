@@ -4,8 +4,10 @@ import { motion } from "framer-motion";
 import { Plus, Users2, ArrowRight, X } from "lucide-react";
 import apiClient from "../../api/client";
 import DashboardLayout from "../../components/DashboardLayout";
+import { useAuth } from "../../context/AuthContext";
 
 export default function OrganizationsPage() {
+  const { user } = useAuth();
   const [orgs, setOrgs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -13,6 +15,12 @@ export default function OrganizationsPage() {
   const [description, setDescription] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+
+  // Prompt#1 3.2: "Admin can create organizations, but limited by the limit
+  // set by Super Admin." null/undefined limit = unlimited.
+  const limit = user?.create_organization_limit;
+  const limitReached =
+    user?.account_type === "admin" && limit != null && orgs.length >= limit;
 
   function loadOrgs() {
     setLoading(true);
@@ -50,13 +58,33 @@ export default function OrganizationsPage() {
             Every PSG-affiliated organization on the portal.
           </p>
         </div>
-        <button onClick={() => setShowForm((v) => !v)} className="btn-primary">
-          <Plus className="h-4 w-4" />
-          {showForm ? "Close" : "Create Organization"}
-        </button>
+        <div className="flex flex-col items-end gap-1.5">
+          <button
+            onClick={() => setShowForm((v) => !v)}
+            disabled={limitReached}
+            className="btn-primary"
+          >
+            <Plus className="h-4 w-4" />
+            {showForm ? "Close" : "Create Organization"}
+          </button>
+          {user?.account_type === "admin" && (
+            <span className="text-xs text-navy-900/40">
+              {limit == null
+                ? "Unlimited organizations"
+                : `${orgs.length} / ${limit} organizations used`}
+            </span>
+          )}
+        </div>
       </div>
 
-      {showForm && (
+      {limitReached && (
+        <div className="card mb-6 border-gold-500/40 bg-gold-500/5 text-sm text-navy-900">
+          You&apos;ve reached your organization limit ({limit}). Contact the Super Admin to
+          raise it.
+        </div>
+      )}
+
+      {showForm && !limitReached && (
         <motion.form
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: "auto" }}

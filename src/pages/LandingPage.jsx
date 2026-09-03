@@ -73,7 +73,11 @@ export default function LandingPage() {
               <Link to="/signup" className="btn-gold">
                 Get Started <ArrowRight className="h-4 w-4" />
               </Link>
-              <Link to="/login" className="btn-outline border-white/25 text-white hover:border-gold-400">
+              {/* FIX: text-white -> !text-white so it wins over .btn-outline's default navy text */}
+              <Link
+                to="/login"
+                className="btn-outline border-white/25 !text-white hover:border-gold-400"
+              >
                 Log In
               </Link>
             </div>
