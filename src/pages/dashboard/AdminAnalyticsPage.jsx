@@ -13,6 +13,7 @@ const TRACKED_ROLES = [
   "Secretary",
   "Treasurer",
   "Auditor",
+  "PIO",
   "EducSoc Governor",
   "BMA Governor",
 ];
@@ -46,7 +47,7 @@ export default function AdminAnalyticsPage() {
         <h1 className="text-2xl font-semibold text-navy-950">Analytics</h1>
         <p className="mt-1 text-sm text-navy-900/60">
           Real-time activity across President, VP Internal &amp; External, VP Sports, Secretary,
-          Treasurer, Auditor, EducSoc Governor, and BMA Governor.
+          Treasurer, Auditor, PIO, EducSoc Governor, and BMA Governor.
         </p>
       </div>
 

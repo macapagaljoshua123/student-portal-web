@@ -9,10 +9,13 @@ import ThreeDotMenu from "../../components/ThreeDotMenu";
 import StatusBadge from "../../components/StatusBadge";
 import { useOrgPresence } from "../../hooks/usePresence";
 import { useToast } from "../../context/ToastContext";
+import { useAuth } from "../../context/AuthContext";
 
 export default function OrganizationDetailPage() {
   const { orgId } = useParams();
   const { notify } = useToast();
+  const { user } = useAuth();
+  const isAdviser = user?.account_type === "adviser";
   const [org, setOrg] = useState(null);
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -72,7 +75,7 @@ export default function OrganizationDetailPage() {
         to="/dashboard/organizations"
         className="mb-4 inline-flex items-center gap-1.5 text-sm font-medium text-navy-900/60 hover:text-navy-900"
       >
-        <ArrowLeft className="h-4 w-4" /> All Organizations
+        <ArrowLeft className="h-4 w-4" /> {isAdviser ? "List of Organization" : "All Organizations"}
       </Link>
 
       {loading && !org ? (
@@ -96,6 +99,7 @@ export default function OrganizationDetailPage() {
             {showCreate && (
               <CreateMemberForm
                 orgId={orgId}
+                canAddAdviser={!isAdviser}
                 onClose={() => setShowCreate(false)}
                 onCreated={() => {
                   setShowCreate(false);
@@ -131,7 +135,7 @@ export default function OrganizationDetailPage() {
                       </td>
                       <td className="px-6 py-4">
                         <span className="inline-flex items-center rounded-full bg-navy-900/5 px-3 py-1 text-xs font-medium text-navy-900">
-                          {m.org_role || "—"}
+                          {m.org_role || (m.account_type === "adviser" ? "Adviser" : "—")}
                         </span>
                       </td>
                       <td className="px-6 py-4">
@@ -141,6 +145,9 @@ export default function OrganizationDetailPage() {
                         {new Date(m.created_at).toLocaleDateString()}
                       </td>
                       <td className="px-6 py-4 text-right">
+                        {isAdviser && m.account_type === "adviser" ? (
+                          <span className="text-xs text-navy-900/30">—</span>
+                        ) : (
                         <ThreeDotMenu
                           label={`Actions for ${m.full_name}`}
                           items={[
@@ -158,6 +165,7 @@ export default function OrganizationDetailPage() {
                             },
                           ]}
                         />
+                        )}
                       </td>
                     </tr>
                   ))}

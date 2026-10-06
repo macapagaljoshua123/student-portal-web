@@ -53,11 +53,14 @@ export default function OrganizationsPage() {
     <DashboardLayout>
       <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold text-navy-950">Organizations</h1>
+          <h1 className="text-2xl font-semibold text-navy-950">
+            {user?.account_type === "adviser" ? "List of Organization" : "Organizations"}
+          </h1>
           <p className="mt-1 text-sm text-navy-900/60">
             Every PSG-affiliated organization on the portal.
           </p>
         </div>
+        {user?.account_type !== "adviser" && (
         <div className="flex flex-col items-end gap-1.5">
           <button
             onClick={() => setShowForm((v) => !v)}
@@ -75,6 +78,7 @@ export default function OrganizationsPage() {
             </span>
           )}
         </div>
+        )}
       </div>
 
       {limitReached && (

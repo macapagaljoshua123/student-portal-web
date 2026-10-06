@@ -9,11 +9,17 @@ export const PSG_ROLES = [
   { value: "Secretary", accountType: "member" },
   { value: "Treasurer", accountType: "member" },
   { value: "Auditor", accountType: "member" },
+  { value: "PIO", accountType: "member" },
   { value: "BMA Governor", accountType: "member" },
   { value: "EducSoc Governor", accountType: "member" },
 ];
 
-export default function RoleDropdown({ value, onChange, id }) {
+// Adviser is an account type (not a PSG seat). Only Admins can assign it.
+export const ADVISER_ROLE = { value: "Adviser", accountType: "adviser" };
+export const ALL_ROLES = [ADVISER_ROLE, ...PSG_ROLES];
+
+export default function RoleDropdown({ value, onChange, id, includeAdviser = false }) {
+  const options = includeAdviser ? ALL_ROLES : PSG_ROLES;
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
 
@@ -48,7 +54,7 @@ export default function RoleDropdown({ value, onChange, id }) {
           onMouseLeave={() => setOpen(false)}
           className="absolute z-20 mt-1 w-full overflow-hidden rounded-xl border border-navy-900/10 bg-white shadow-soft"
         >
-          {PSG_ROLES.map((role) => (
+          {options.map((role) => (
             <li key={role.value}>
               <button
                 type="button"

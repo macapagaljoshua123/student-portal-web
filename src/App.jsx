@@ -15,13 +15,24 @@ import OrganizationsPage from "./pages/dashboard/OrganizationsPage";
 import OrganizationDetailPage from "./pages/dashboard/OrganizationDetailPage";
 import SettingsPage from "./pages/dashboard/SettingsPage";
 import ProfileViewPage from "./pages/dashboard/ProfileViewPage";
+import AdviserAnalyticsPage from "./pages/dashboard/AdviserAnalyticsPage";
+import TaskBoardPage from "./pages/dashboard/TaskBoardPage";
+import MyTasksPage from "./pages/dashboard/MyTasksPage";
+import PIODashboardPage from "./pages/dashboard/PIODashboardPage";
 
 const DASHBOARD_ROUTES = {
   super_admin: "/dashboard/analytics",
   admin: "/dashboard/organizations",
-  co_admin: "/dashboard/profile",
-  member: "/dashboard/profile",
+  adviser: "/dashboard/adviser-analytics",
+  // /dashboard/home sends PIO to their own dashboard, everyone else to My Tasks.
+  co_admin: "/dashboard/home",
+  member: "/dashboard/home",
 };
+
+function PSGHomeRedirect() {
+  const { user } = useAuth();
+  return <Navigate to={user?.org_role === "PIO" ? "/dashboard/pio" : "/dashboard/my-tasks"} replace />;
+}
 
 function RootRedirect() {
   
@@ -79,7 +90,7 @@ export default function App() {
           <Route
             path="/dashboard/organizations"
             element={
-              <ProtectedRoute allowedRoles={["super_admin", "admin"]}>
+              <ProtectedRoute allowedRoles={["super_admin", "admin", "adviser"]}>
                 <OrganizationsPage />
               </ProtectedRoute>
             }
@@ -87,7 +98,7 @@ export default function App() {
           <Route
             path="/dashboard/organizations/:orgId"
             element={
-              <ProtectedRoute allowedRoles={["super_admin", "admin"]}>
+              <ProtectedRoute allowedRoles={["super_admin", "admin", "adviser"]}>
                 <OrganizationDetailPage />
               </ProtectedRoute>
             }
@@ -95,7 +106,7 @@ export default function App() {
           <Route
             path="/dashboard/settings"
             element={
-              <ProtectedRoute allowedRoles={["super_admin", "admin", "co_admin", "member"]}>
+              <ProtectedRoute allowedRoles={["super_admin", "admin", "adviser", "co_admin", "member"]}>
                 <SettingsPage />
               </ProtectedRoute>
             }
@@ -105,6 +116,47 @@ export default function App() {
             element={
               <ProtectedRoute allowedRoles={["co_admin", "member"]}>
                 <ProfileViewPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/dashboard/adviser-analytics"
+            element={
+              <ProtectedRoute allowedRoles={["adviser"]}>
+                <AdviserAnalyticsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard/task-board"
+            element={
+              <ProtectedRoute allowedRoles={["adviser"]}>
+                <TaskBoardPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard/home"
+            element={
+              <ProtectedRoute allowedRoles={["co_admin", "member"]}>
+                <PSGHomeRedirect />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard/my-tasks"
+            element={
+              <ProtectedRoute allowedRoles={["co_admin", "member"]}>
+                <MyTasksPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard/pio"
+            element={
+              <ProtectedRoute allowedRoles={["co_admin", "member"]}>
+                <PIODashboardPage />
               </ProtectedRoute>
             }
           />

@@ -2,9 +2,10 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { X } from "lucide-react";
 import apiClient from "../api/client";
-import RoleDropdown, { PSG_ROLES } from "./RoleDropdown";
+import RoleDropdown, { ALL_ROLES } from "./RoleDropdown";
 
-export default function CreateMemberForm({ orgId, onClose, onCreated }) {
+// canAddAdviser: only Admins / Super Admin may create an Adviser account.
+export default function CreateMemberForm({ orgId, onClose, onCreated, canAddAdviser = false }) {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [contactNumber, setContactNumber] = useState("");
@@ -27,7 +28,7 @@ export default function CreateMemberForm({ orgId, onClose, onCreated }) {
       return;
     }
 
-    const roleMeta = PSG_ROLES.find((r) => r.value === role);
+    const roleMeta = ALL_ROLES.find((r) => r.value === role);
 
     setSubmitting(true);
     try {
@@ -36,7 +37,7 @@ export default function CreateMemberForm({ orgId, onClose, onCreated }) {
         email,
         contact_number: contactNumber || null,
         account_type: roleMeta.accountType,
-        org_role: role,
+        org_role: roleMeta.accountType === "adviser" ? null : role,
         auto_generate_password: autoGenerate,
         password: autoGenerate ? null : password,
       });
@@ -104,7 +105,7 @@ export default function CreateMemberForm({ orgId, onClose, onCreated }) {
           <label htmlFor="role" className="field-label">
             Role
           </label>
-          <RoleDropdown id="role" value={role} onChange={setRole} />
+          <RoleDropdown id="role" value={role} onChange={setRole} includeAdviser={canAddAdviser} />
         </div>
       </div>
 

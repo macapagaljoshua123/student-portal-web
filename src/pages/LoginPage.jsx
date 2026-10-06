@@ -8,8 +8,9 @@ import GoogleSignInButton from "../components/GoogleSignInButton";
 const DASHBOARD_ROUTES = {
   super_admin: "/dashboard/analytics",
   admin: "/dashboard/organizations",
-  co_admin: "/dashboard/profile",
-  member: "/dashboard/profile",
+  adviser: "/dashboard/adviser-analytics",
+  co_admin: "/dashboard/home",
+  member: "/dashboard/home",
 };
 
 export default function LoginPage() {

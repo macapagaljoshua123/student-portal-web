@@ -77,12 +77,16 @@ export default function EditMemberModal({ orgId, member, onClose, onSaved }) {
               onChange={(e) => setContactNumber(e.target.value)}
             />
           </div>
-          <div>
-            <label htmlFor="edit-role" className="field-label">
-              Role
-            </label>
-            <RoleDropdown id="edit-role" value={role} onChange={setRole} />
-          </div>
+          {member.account_type === "adviser" ? (
+            <p className="rounded-lg bg-navy-900/5 px-3 py-2 text-sm text-navy-900/70">Role: Adviser</p>
+          ) : (
+            <div>
+              <label htmlFor="edit-role" className="field-label">
+                Role
+              </label>
+              <RoleDropdown id="edit-role" value={role} onChange={setRole} />
+            </div>
+          )}
 
           {error && <p className="text-sm text-red-600">{error}</p>}
 
