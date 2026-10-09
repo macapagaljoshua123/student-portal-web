@@ -74,6 +74,13 @@ export function AuthProvider({ children }) {
   }, []);
 
   const logout = useCallback(() => {
+    // Flip the status to Offline right away (token passed explicitly because it's removed below).
+    const token = localStorage.getItem("sgp_token");
+    if (token) {
+      apiClient
+        .post("/presence/offline", null, { headers: { Authorization: `Bearer ${token}` } })
+        .catch(() => {});
+    }
     localStorage.removeItem("sgp_token");
     localStorage.removeItem("sgp_user");
     setUser(null);

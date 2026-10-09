@@ -15,6 +15,9 @@ export default function OrganizationsPage() {
   const [description, setDescription] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const isAdviser = user?.account_type === "adviser";
+  // An Adviser owns one organization: create it here, then add members inside it.
+  const canCreate = !isAdviser || (!loading && orgs.length === 0);
 
   // Prompt#1 3.2: "Admin can create organizations, but limited by the limit
   // set by Super Admin." null/undefined limit = unlimited.
@@ -57,10 +60,14 @@ export default function OrganizationsPage() {
             {user?.account_type === "adviser" ? "List of Organization" : "Organizations"}
           </h1>
           <p className="mt-1 text-sm text-navy-900/60">
-            Every PSG-affiliated organization on the portal.
+            {isAdviser
+              ? "Your organization and the members you've added to it."
+              : user?.account_type === "admin"
+              ? "Every PSG-affiliated organization, including the ones your Advisers create."
+              : "Every PSG-affiliated organization on the portal."}
           </p>
         </div>
-        {user?.account_type !== "adviser" && (
+        {canCreate && (
         <div className="flex flex-col items-end gap-1.5">
           <button
             onClick={() => setShowForm((v) => !v)}
@@ -143,7 +150,7 @@ export default function OrganizationsPage() {
         <p className="text-sm text-navy-900/50">Loading organizations...</p>
       ) : orgs.length === 0 ? (
         <div className="card text-center text-sm text-navy-900/50">
-          No organizations yet. Create your first one above.
+          {isAdviser ? "You don't have an organization yet. Create yours above, then add your members." : "No organizations yet. Create your first one above."}
         </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -160,6 +167,13 @@ export default function OrganizationsPage() {
                 <p className="mt-1.5 line-clamp-2 text-sm text-navy-900/60">
                   {org.description || "No description provided."}
                 </p>
+                {!isAdviser && (org.adviser_names?.length > 0 || org.created_by_name) && (
+                  <p className="mt-2 text-xs text-navy-900/50">
+                    {org.adviser_names?.length > 0
+                      ? `Adviser: ${org.adviser_names.join(", ")}`
+                      : `Created by ${org.created_by_name}`}
+                  </p>
+                )}
               </div>
               <div className="mt-6 flex items-center justify-between text-sm">
                 <span className="inline-flex items-center gap-1.5 text-navy-900/60">

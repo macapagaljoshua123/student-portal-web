@@ -19,6 +19,7 @@ import AdviserAnalyticsPage from "./pages/dashboard/AdviserAnalyticsPage";
 import TaskBoardPage from "./pages/dashboard/TaskBoardPage";
 import MyTasksPage from "./pages/dashboard/MyTasksPage";
 import PIODashboardPage from "./pages/dashboard/PIODashboardPage";
+import MyOrganizationPage from "./pages/dashboard/MyOrganizationPage";
 
 const DASHBOARD_ROUTES = {
   super_admin: "/dashboard/analytics",
@@ -114,7 +115,7 @@ export default function App() {
           <Route
             path="/dashboard/profile"
             element={
-              <ProtectedRoute allowedRoles={["co_admin", "member"]}>
+              <ProtectedRoute allowedRoles={["admin", "adviser", "co_admin", "member"]}>
                 <ProfileViewPage />
               </ProtectedRoute>
             }
@@ -149,6 +150,14 @@ export default function App() {
             element={
               <ProtectedRoute allowedRoles={["co_admin", "member"]}>
                 <MyTasksPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard/my-organization"
+            element={
+              <ProtectedRoute allowedRoles={["co_admin", "member"]}>
+                <MyOrganizationPage />
               </ProtectedRoute>
             }
           />

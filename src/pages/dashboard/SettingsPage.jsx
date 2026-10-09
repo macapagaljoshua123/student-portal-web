@@ -1,13 +1,15 @@
 import { useState } from "react";
-import { KeyRound, Pencil } from "lucide-react";
+import { KeyRound, Moon, Pencil, Sun } from "lucide-react";
 import apiClient from "../../api/client";
 import DashboardLayout from "../../components/DashboardLayout";
 import { useAuth } from "../../context/AuthContext";
 import { useToast } from "../../context/ToastContext";
+import { useTheme } from "../../context/ThemeContext";
 
 export default function SettingsPage() {
   const { user, refreshUser } = useAuth();
   const { notify } = useToast();
+  const { theme, toggleTheme } = useTheme();
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [message, setMessage] = useState("");
@@ -131,6 +133,35 @@ export default function SettingsPage() {
             </div>
           </dl>
           <p className="mt-3 text-xs text-navy-900/40">Role and Email are fixed for now.</p>
+        </div>
+
+        <div className="card">
+          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-navy-900 text-gold-400">
+            {theme === "dark" ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
+          </div>
+          <h2 className="mt-4 font-display text-lg font-semibold text-navy-950">Appearance</h2>
+          <div className="mt-4 flex items-center justify-between gap-4">
+            <div>
+              <p className="text-sm font-medium text-navy-900">Dark mode</p>
+              <p className="text-xs text-navy-900/50">Easier on the eyes in low light. Saved on this device.</p>
+            </div>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={theme === "dark"}
+              aria-label="Toggle dark mode"
+              onClick={toggleTheme}
+              className={`relative h-6 w-11 shrink-0 rounded-full transition ${
+                theme === "dark" ? "bg-gold-500" : "bg-navy-900/25"
+              }`}
+            >
+              <span
+                className={`absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${
+                  theme === "dark" ? "translate-x-5" : ""
+                }`}
+              />
+            </button>
+          </div>
         </div>
 
         {!isSuperAdmin && (

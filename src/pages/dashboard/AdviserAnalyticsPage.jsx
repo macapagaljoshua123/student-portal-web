@@ -4,6 +4,8 @@ import apiClient from "../../api/client";
 import DashboardLayout from "../../components/DashboardLayout";
 import ProgressBar from "../../components/ProgressBar";
 import TaskItemCard from "../../components/TaskItemCard";
+import StatusBadge from "../../components/StatusBadge";
+import { useOrgPresence } from "../../hooks/usePresence";
 
 function Stat({ icon: Icon, label, value }) {
   return (
@@ -23,6 +25,7 @@ export default function AdviserAnalyticsPage() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState("All");
+  const presence = useOrgPresence(data?.organization?.id);
 
   // Poll so new accomplishments show up without a manual refresh.
   useEffect(() => {
@@ -110,6 +113,11 @@ export default function AdviserAnalyticsPage() {
                         <Users className="h-3.5 w-3.5 shrink-0" />
                         {r.member_name || "— vacant —"}
                       </p>
+                      {r.member_id && (
+                        <div className="mt-1.5">
+                          <StatusBadge online={Boolean(presence[r.member_id])} />
+                        </div>
+                      )}
                     </div>
                     <span className="shrink-0 text-xs text-navy-900/50">
                       {r.completed}/{r.total} tasks
@@ -135,6 +143,11 @@ export default function AdviserAnalyticsPage() {
                       {active.member_name || "No member assigned"}
                       {active.member_email ? ` · ${active.member_email}` : ""}
                     </p>
+                    {active.member_id && (
+                      <div className="mt-1.5">
+                        <StatusBadge online={Boolean(presence[active.member_id])} />
+                      </div>
+                    )}
                   </div>
                   <p className="text-sm text-navy-900/60">
                     {active.completed} of {active.total} tasks accomplished

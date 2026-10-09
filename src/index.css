@@ -41,3 +41,58 @@
     @apply rounded-2xl border border-navy-900/10 bg-white p-6 shadow-soft;
   }
 }
+
+/* ===== Dark mode (dashboard only) =====
+   Toggled from Settings. Remaps the light-theme utility classes used across the
+   dashboard so no page needs per-component dark: variants. */
+.dark .dash-root { background-color: #08111f; color-scheme: dark; }
+.dark .dash-root [class~="text-navy-950"] { color: #eef2f8 }
+.dark .dash-root [class~="text-navy-900"] { color: #eef2f8 }
+.dark .dash-root [class~="text-navy-800"] { color: #eef2f8 }
+.dark .dash-root [class~="text-navy-900/20"] { color: rgba(226,232,240,0.3) }
+.dark .dash-root [class~="text-navy-900/25"] { color: rgba(226,232,240,0.3) }
+.dark .dash-root [class~="text-navy-900/30"] { color: rgba(226,232,240,0.3) }
+.dark .dash-root [class~="text-navy-900/40"] { color: rgba(226,232,240,0.4) }
+.dark .dash-root [class~="text-navy-900/50"] { color: rgba(226,232,240,0.5) }
+.dark .dash-root [class~="text-navy-900/60"] { color: rgba(226,232,240,0.6) }
+.dark .dash-root [class~="text-navy-900/70"] { color: rgba(226,232,240,0.7) }
+.dark .dash-root [class~="text-navy-900/80"] { color: rgba(226,232,240,0.8) }
+.dark .dash-root [class~="hover:text-navy-900"]:hover { color: #ffffff }
+.dark .dash-root [class~="bg-white"] { background-color: #0f1d36 }
+.dark .dash-root .card { background-color: #0f1d36; border-color: rgba(255,255,255,.1) }
+.dark .dash-root [class~="bg-navy-900/5"] { background-color: rgba(255,255,255,0.06) }
+.dark .dash-root [class~="bg-navy-900/10"] { background-color: rgba(255,255,255,0.1) }
+.dark .dash-root [class~="bg-navy-900/[0.02]"] { background-color: rgba(255,255,255,0.03) }
+.dark .dash-root [class~="bg-navy-900/[0.03]"] { background-color: rgba(255,255,255,0.05) }
+.dark .dash-root [class~="bg-navy-900/[0.04]"] { background-color: rgba(255,255,255,0.06) }
+.dark .dash-root [class~="hover:bg-navy-900/5"]:hover { background-color: rgba(255,255,255,0.07) }
+.dark .dash-root [class~="hover:bg-navy-900/[0.04]"]:hover { background-color: rgba(255,255,255,0.08) }
+.dark .dash-root [class~="border-navy-900/5"] { border-color: rgba(255,255,255,0.06) }
+.dark .dash-root [class~="border-navy-900/10"] { border-color: rgba(255,255,255,0.12) }
+.dark .dash-root [class~="border-navy-900/15"] { border-color: rgba(255,255,255,0.18) }
+.dark .dash-root [class~="border-navy-900/20"] { border-color: rgba(255,255,255,0.24) }
+.dark .dash-root [class~="border-navy-900/25"] { border-color: rgba(255,255,255,0.3) }
+.dark .dash-root [class~="border-navy-900/30"] { border-color: rgba(255,255,255,0.36) }
+.dark .dash-root [class~="hover:border-navy-900/30"]:hover { border-color: rgba(255,255,255,.45) }
+.dark .dash-root [class~="hover:border-navy-900/40"]:hover { border-color: rgba(255,255,255,.45) }
+.dark .dash-root [class~="hover:border-navy-900"]:hover { border-color: rgba(255,255,255,.45) }
+.dark .dash-root [class~="bg-navy-900"] { background-color: #254473 }
+.dark .dash-root [class~="border-navy-900"] { border-color: #254473 }
+.dark .dash-root .btn-primary { background-color: #254473; color: #fff }
+.dark .dash-root .btn-primary:hover { background-color: #33578F }
+.dark .dash-root .btn-outline { color: #eef2f8; border-color: rgba(255,255,255,.25) }
+.dark .dash-root .btn-outline:hover { border-color: rgba(255,255,255,.6) }
+.dark .dash-root .field-label { color: #cfd8e6 }
+.dark .dash-root .field-input { background-color: #0a1730; border-color: rgba(255,255,255,.15); color: #eef2f8 }
+.dark .dash-root .field-input::placeholder { color: rgba(226,232,240,.4) }
+.dark .dash-root .field-input:disabled { background-color: rgba(255,255,255,.04) }
+.dark .dash-root [class~="bg-red-50"], .dark .dash-root [class~="hover:bg-red-50"]:hover { background-color: rgba(239,68,68,.14) }
+.dark .dash-root [class~="text-red-700"] { color: #fca5a5 }
+.dark .dash-root [class~="bg-emerald-50/50"] { background-color: rgba(16,185,129,.08) }
+.dark .dash-root [class~="bg-emerald-100"] { background-color: rgba(16,185,129,.2) }
+.dark .dash-root [class~="text-emerald-700"], .dark .dash-root [class~="text-emerald-800"] { color: #6ee7b7 }
+.dark .dash-root [class~="bg-amber-50"] { background-color: rgba(245,158,11,.12) }
+.dark .dash-root [class~="bg-amber-100"] { background-color: rgba(245,158,11,.2) }
+.dark .dash-root [class~="text-amber-700"], .dark .dash-root [class~="text-amber-800"], .dark .dash-root [class~="text-amber-900"] { color: #fcd34d }
+.dark .dash-root [class~="border-amber-300"] { border-color: rgba(252,211,77,.4) }
+.dark .dash-root [class~="text-gold-600"] { color: #E3C567 }

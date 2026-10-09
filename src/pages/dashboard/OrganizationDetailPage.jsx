@@ -7,6 +7,7 @@ import CreateMemberForm from "../../components/CreateMemberForm";
 import EditMemberModal from "../../components/EditMemberModal";
 import ThreeDotMenu from "../../components/ThreeDotMenu";
 import StatusBadge from "../../components/StatusBadge";
+import Avatar from "../../components/Avatar";
 import { useOrgPresence } from "../../hooks/usePresence";
 import { useToast } from "../../context/ToastContext";
 import { useAuth } from "../../context/AuthContext";
@@ -130,8 +131,13 @@ export default function OrganizationDetailPage() {
                   {members.map((m) => (
                     <tr key={m.id} className="border-b border-navy-900/5 last:border-0">
                       <td className="px-6 py-4">
-                        <p className="font-medium text-navy-900">{m.full_name}</p>
-                        <p className="text-xs text-navy-900/50">{m.email}</p>
+                        <div className="flex items-center gap-3">
+                          <Avatar user={m} size={36} />
+                          <div>
+                            <p className="font-medium text-navy-900">{m.full_name}</p>
+                            <p className="text-xs text-navy-900/50">{m.email}</p>
+                          </div>
+                        </div>
                       </td>
                       <td className="px-6 py-4">
                         <span className="inline-flex items-center rounded-full bg-navy-900/5 px-3 py-1 text-xs font-medium text-navy-900">

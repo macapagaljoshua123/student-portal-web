@@ -10,11 +10,11 @@ import apiClient from "../api/client";
  * contract so it lights up as soon as the backend adds the two endpoints
  * below, and degrades harmlessly (no crash, badges just stay gray) if they
  * don't exist yet:
- *   - POST /presence/heartbeat            { }      -> marks current user online
+ *   - POST /presence/heartbeat            { }      -> marks current user online (implemented in the API)
  *   - GET  /organizations/:orgId/presence          -> { [userId]: boolean }
  */
-const HEARTBEAT_INTERVAL_MS = 20000;
-const POLL_INTERVAL_MS = 15000;
+const HEARTBEAT_INTERVAL_MS = 15000;
+const POLL_INTERVAL_MS = 8000;
 
 // Call once near the app root (while a user is logged in) to keep this
 // user's own status "online" while the tab is open and focused.

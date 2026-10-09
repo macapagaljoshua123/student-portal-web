@@ -15,12 +15,14 @@ import {
   ClipboardList,
   ListChecks,
   Megaphone,
-  PanelLeftClose,
-  PanelLeftOpen,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { usePresenceHeartbeat } from "../hooks/usePresence";
 import NotificationBell from "./NotificationBell";
+import Avatar from "./Avatar";
+import apiClient from "../api/client";
 
 const NAV_ITEMS = {
   super_admin: [
@@ -44,11 +46,13 @@ const NAV_ITEMS = {
   ],
   member: [
     { to: "/dashboard/my-tasks", label: "My Tasks", icon: ListChecks },
+    { to: "/dashboard/my-organization", label: "Organization", icon: Building2 },
     { to: "/dashboard/profile", label: "My Profile", icon: UserCircle2 },
     { to: "/dashboard/settings", label: "Settings", icon: Settings },
   ],
   pio: [
     { to: "/dashboard/pio", label: "PIO Dashboard", icon: Megaphone },
+    { to: "/dashboard/my-organization", label: "Organization", icon: Building2 },
     { to: "/dashboard/profile", label: "My Profile", icon: UserCircle2 },
     { to: "/dashboard/settings", label: "Settings", icon: Settings },
   ],
@@ -61,7 +65,7 @@ function navKeyFor(user) {
 }
 
 export default function DashboardLayout({ children }) {
-  const { user, logout } = useAuth();
+  const { user, logout, refreshUser } = useAuth();
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -74,6 +78,23 @@ export default function DashboardLayout({ children }) {
 
   usePresenceHeartbeat(Boolean(user));
 
+  // Keep the cached session fresh (id, role, name, profile picture) after profile edits / older logins.
+  useEffect(() => {
+    apiClient
+      .get("/auth/me")
+      .then(({ data }) =>
+        refreshUser({
+          id: data.id,
+          full_name: data.full_name,
+          org_role: data.org_role,
+          organization_id: data.organization_id,
+          avatar_version: data.avatar_version,
+        })
+      )
+      .catch(() => {});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const items = NAV_ITEMS[navKeyFor(user)] || [];
 
   function handleLogout() {
@@ -82,7 +103,7 @@ export default function DashboardLayout({ children }) {
   }
 
   return (
-    <div className="min-h-screen bg-navy-900/[0.02]">
+    <div className="dash-root min-h-screen bg-navy-900/[0.02]">
       {/* Top Navbar */}
       <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b border-navy-900/10 bg-white px-4 sm:px-6">
         <div className="flex items-center gap-3">
@@ -113,9 +134,7 @@ export default function DashboardLayout({ children }) {
               aria-haspopup="true"
               aria-expanded={menuOpen}
             >
-              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-gold-500/20 text-navy-900">
-                <UserCircle2 className="h-5 w-5" />
-              </span>
+              <Avatar user={user} size={32} />
               <span className="hidden text-sm font-medium text-navy-900 sm:inline">
                 {user?.full_name}
               </span>
@@ -124,6 +143,15 @@ export default function DashboardLayout({ children }) {
 
             {menuOpen && (
               <div className="absolute right-0 mt-2 w-44 overflow-hidden rounded-xl border border-navy-900/10 bg-white shadow-soft">
+                {user?.account_type !== "super_admin" && (
+                  <NavLink
+                    to="/dashboard/profile"
+                    onClick={() => setMenuOpen(false)}
+                    className="flex items-center gap-2 px-4 py-2.5 text-sm text-navy-900 hover:bg-navy-900/5"
+                  >
+                    <UserCircle2 className="h-4 w-4" /> My Profile
+                  </NavLink>
+                )}
                 <NavLink
                   to="/dashboard/settings"
                   onClick={() => setMenuOpen(false)}
@@ -152,17 +180,15 @@ export default function DashboardLayout({ children }) {
             collapsed ? "lg:w-[4.5rem]" : "lg:w-64"
           } fixed inset-y-16 left-0 z-30 w-64 shrink-0 border-r border-navy-900/10 bg-white p-4 transition-[width] duration-200 lg:sticky lg:top-16 lg:block lg:h-[calc(100vh-4rem)]`}
         >
+          {/* Collapse / expand arrow sitting on the sidebar's right edge (desktop) */}
           <button
             type="button"
             onClick={() => setCollapsed((v) => !v)}
-            className={`mb-3 hidden w-full items-center gap-3 rounded-xl px-3 py-2 text-xs font-semibold uppercase tracking-wide text-navy-900/50 hover:bg-navy-900/5 hover:text-navy-900 lg:flex ${
-              collapsed ? "lg:justify-center lg:px-0" : ""
-            }`}
+            className="absolute -right-3 top-6 z-40 hidden h-6 w-6 items-center justify-center rounded-full border border-navy-900/15 bg-white text-navy-900/60 shadow-soft hover:text-navy-900 lg:flex"
             aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
             title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
           >
-            {collapsed ? <PanelLeftOpen className="h-4 w-4" /> : <PanelLeftClose className="h-4 w-4" />}
-            {!collapsed && "Collapse"}
+            {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
           </button>
           <nav className="flex flex-col gap-1">
             {items.map((item, idx) => (
